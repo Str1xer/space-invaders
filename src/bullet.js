@@ -1,5 +1,5 @@
 export default class Bullet {
-  constructor(x, y, vy, w, h, color) {
+  constructor(x, y, vy, w, h, color, parentType) {
     this.x = x;
   	this.y = y;
   	this.vy = vy;
@@ -7,6 +7,7 @@ export default class Bullet {
   	this.h = h;
   	this.color = color;
     this.destroyed = false;
+    this.parentType = parentType || "cannon";
   }
 
   update(time) {

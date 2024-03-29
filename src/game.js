@@ -82,8 +82,8 @@ export function update(time, stopGame, canvas) {
 
   if (inputHandler.isPressed('Space') && gameState.cannon.reloading === 0) {
     const bulletX = gameState.cannon.left + 10;
-    const bulletY = gameState.cannon.top - 15;
-    gameState.bullets.push(new Bullet(bulletX, bulletY, -8, 2, 6, "#fff"));
+    const bulletY = gameState.cannon.y;
+    gameState.bullets.push(new Bullet(bulletX, bulletY, -8, 2, 6, "#fff", "cannon"));
     gameState.cannon.reloading = gameState.cannon.reloadingTime;
   }
 
@@ -91,16 +91,19 @@ export function update(time, stopGame, canvas) {
 
     let possibleHit = [];
 
-    if (isBulletIntersects(b, gameState.cannon)) {
+    if (b.parentType === "alien" && isBulletIntersects(b, gameState.cannon)) {
       possibleHit.push({ distance: isBulletIntersects(b, gameState.cannon), other: gameState.cannon })
     }
 
-    gameState.aliens.forEach(alien => {
-      let overlapInfo = isBulletIntersects(b, alien);
-      if (overlapInfo) {
-        possibleHit.push({ distance: overlapInfo, other: alien });
-      }
-    })
+    if (b.parentType === "cannon") {
+      gameState.aliens.forEach(alien => {
+        let overlapInfo = isBulletIntersects(b, alien);
+        if (overlapInfo) {
+          possibleHit.push({ distance: overlapInfo, other: alien });
+        }
+      })
+    }
+
 
     if (possibleHit.length) {
       possibleHit = possibleHit.sort(function (first, second) {
@@ -164,8 +167,8 @@ export function update(time, stopGame, canvas) {
 
         if (alien.timeToShoot < 0) {
           const bulletX = alien.left + 10;
-          const bulletY = alien.bottom + 6;
-          gameState.bullets.push(new Bullet(bulletX, bulletY, timeMultiplier < 0 ? 2 : 4, 2, 6, timeMultiplier < 0 ? "#fff" : "#FF0000"));
+          const bulletY = alien.bottom;
+          gameState.bullets.push(new Bullet(bulletX, bulletY, timeMultiplier < 0 ? 2 : 4, 2, 6, timeMultiplier < 0 ? "#fff" : "#FF0000", "alien"));
           alien.timeToReload = 5000;
           alien.timeToShoot = Math.random() * 10000
         }

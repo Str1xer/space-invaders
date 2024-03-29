@@ -6,7 +6,7 @@ export default class Alien {
     this._spriteB = spriteB;
     this.destroyed = false;
     this.shootingIsAvailable = false;
-    this.timeToReload = 5000;
+    this.timeToReload = 0;
     this.timeToShoot = Math.random() * 10000;
     this.type = "alien"
   }
