@@ -2,10 +2,10 @@
   "name": "space-invaders",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "source": "index.html",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html --out-dir docs --public-url /space-invaders/"
+    "build": "parcel build index.html --public-url /space-invaders/"
   },
   "license": "ISC",
   "devDependencies": {
