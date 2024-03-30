@@ -1,5 +1,5 @@
 export default class Alien {
-  constructor(x, y, [spriteA, spriteB]) {
+  constructor(x, y, [spriteA, spriteB], hits = 1) {
     this.x = x;
     this.y = y;
     this._spriteA = spriteA;
@@ -8,7 +8,8 @@ export default class Alien {
     this.shootingIsAvailable = false;
     this.timeToReload = 0;
     this.timeToShoot = Math.random() * 10000;
-    this.type = "alien"
+    this.type = "alien";
+    this.hits = hits;
   }
 
   draw(ctx, time) {

@@ -59,7 +59,7 @@ export function init(canvas) {
       }
 
       gameState.aliens.push(
-        new Alien(alienX, alienY, sprites.aliens[alienType])
+        new Alien(alienX, alienY, sprites.aliens[alienType], alienType + 1)
       );
     }
   }
@@ -126,7 +126,11 @@ export function update(time, stopGame, canvas) {
         return first.distance - second.distance;
       });
 
-      if (possibleHit[0].other.type == "alien") {
+      if (possibleHit[0].other.type == "bunker" || possibleHit[0].other.type == "alien") {
+        possibleHit[0].other.hits -= 1;
+      }
+
+      if (possibleHit[0].other.type == "alien" && possibleHit[0].other.hits <= 0) {
         kills += 1;
         if (kills == 10) {
           kills = 0;
@@ -141,10 +145,6 @@ export function update(time, stopGame, canvas) {
           gameState.roundState = "loss";
       }
 
-      if (possibleHit[0].other.type == "bunker") {
-        possibleHit[0].other.hits -= 1;
-      }
-
       possibleHit[0].other.destroyed = true;
       b.destroyed = true;
     } else {
@@ -156,7 +156,7 @@ export function update(time, stopGame, canvas) {
   });
 
   gameState.bullets = gameState.bullets.filter(b => !b.destroyed);
-  gameState.aliens = gameState.aliens.filter(a => !a.destroyed);
+  gameState.aliens = gameState.aliens.filter(a => !a.destroyed || a.hits > 0);
   gameState.bunkers = gameState.bunkers.filter(b => !b.destroyed || b.hits > 0);
 
   if (!gameState.aliens.length) gameState.roundState = "winning";
