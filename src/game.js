@@ -8,6 +8,7 @@ import assetPath from '../assets/invaders.png'
 import { isBlocked, isBulletIntersects } from './collision/collision'
 import { clamp } from './utils/clamp'
 import { drawCannonLifes, drawGameLoss, drawGameWinning } from './interface'
+import Bunker from './bunker'
 
 let assets;
 const sprites = {
@@ -18,6 +19,7 @@ const sprites = {
 const gameState = {
   bullets: [],
   aliens: [],
+  bunkers: [],
   cannon: null,
   cannonLifes: 3,
   roundState: "playing"
@@ -62,6 +64,13 @@ export function init(canvas) {
     }
   }
 
+  const bunkerCount = 8;
+  for (var i = 0; i < bunkerCount; i++) {
+    gameState.bunkers.push(
+      new Bunker((canvas.clientWidth - sprites.bunker.w) / bunkerCount * i + (canvas.clientWidth - sprites.bunker.w) / bunkerCount / 2, canvas.clientHeight - 200, sprites.bunker)
+    )
+  }
+
   gameState.cannon = new Cannon(
     100, canvas.height - 100,
     sprites.cannon
@@ -104,6 +113,13 @@ export function update(time, stopGame, canvas) {
       })
     }
 
+    gameState.bunkers.forEach(bunker => {
+      let info = isBulletIntersects(b, bunker);
+      if (info) {
+        possibleHit.push({ distance: info, other: bunker });
+        console.log("hit")
+      }
+    })
 
     if (possibleHit.length) {
       possibleHit = possibleHit.sort(function (first, second) {
@@ -125,6 +141,10 @@ export function update(time, stopGame, canvas) {
           gameState.roundState = "loss";
       }
 
+      if (possibleHit[0].other.type == "bunker") {
+        possibleHit[0].other.hits -= 1;
+      }
+
       possibleHit[0].other.destroyed = true;
       b.destroyed = true;
     } else {
@@ -133,11 +153,11 @@ export function update(time, stopGame, canvas) {
       else
         b.update(time)
     }
-
   });
 
   gameState.bullets = gameState.bullets.filter(b => !b.destroyed);
   gameState.aliens = gameState.aliens.filter(a => !a.destroyed);
+  gameState.bunkers = gameState.bunkers.filter(b => !b.destroyed || b.hits > 0);
 
   if (!gameState.aliens.length) gameState.roundState = "winning";
 
@@ -198,6 +218,6 @@ export function draw(canvas, time) {
   gameState.aliens.forEach(a => a.draw(ctx, time));
   gameState.cannon.draw(ctx);
   gameState.bullets.forEach(b => b.draw(ctx));
-
+  gameState.bunkers.forEach(b => b.draw(ctx, time));
 
 }
